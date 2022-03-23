@@ -5,8 +5,15 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request, redirect, url_for
+from os import getcwd, listdir
+from os.path import join
+from app import app, db
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
+from app.forms import PropertyForm
+from app.models import PropertyProfile
+from werkzeug.utils import secure_filename
+import os
+import psycopg2
 
 
 ###
@@ -28,6 +35,61 @@ def about():
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+
+@app.route('/properties/create', methods=["GET","POST"])
+def newProperty():
+    """Render a secure page on our website that only logged in users can access."""
+    form = PropertyForm()
+    #if request.method == 'GET':
+       # return render_template('newProperty.html',form=form)
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            title  = form.title.data
+            bedrooms = form.bedrooms.data
+            bathrooms = form.bathrooms.data
+            location = form.location.data
+            price = form.price.data
+            type = form.type.data
+            description = form.description.data
+            photo = form.photo.data
+
+
+            filename = secure_filename(photo.filename)
+            #photo.save( join(getcwd(),app.config['UPLOAD_FOLDER'] , filename))
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Insert to database
+            newProperty = PropertyProfile(title,bedrooms,bathrooms,location,price,type,description,filename)
+            db.session.add(newProperty)
+            db.session.commit()
+            flash('New Property Added Successfully', 'success')
+            return redirect(url_for("showProperties")) 
+            
+        else:
+            flash_errors(form)
+            return render_template('newProperty.html',form=form)
+    else:
+        return render_template('newProperty.html',form=form)
+
+
+@app.route('/properties/')
+def showProperties():
+
+    properties = PropertyProfile.query.all()
+
+    return render_template('showProperties.html', properties=properties)
+
+@app.route('/properties/<propertyid>') 
+def showProperty(propertyid):
+    p=PropertyProfile.query.get(propertyid)
+    return render_template('showProperty.html',property=p)
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+
+    rootdir = os.getcwd()
+    return  send_from_directory(os.path.join(rootdir,app.config['UPLOAD_FOLDER']), filename)
 
 # Display Flask WTF errors as Flash messages
 def flash_errors(form):

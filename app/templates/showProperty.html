@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+{% endblock %}
+
+{% block main  %}
+{% include 'flash_messages.html' %}
+<h1> Property</h1>
+<br>
+    <div class="card"> 
+     
+        <img src="{{url_for('get_image', filename=property.photo) }}" alt ="Property Photo">
+        <div class="propertyBox">
+            <h3> {{ property.title }} </h3>
+            <p class="pprice">{{ property.price }}</p> 
+            <p class="ptype">{{ property.ptype}}</p>
+            <p class="pdesc"> {{ property.description }}</p>
+            <p class="pbedroom"> {{ property.bedrooms }} Bedrooms</p>
+            <p class="pbathroom"> {{ property.bathrooms }} Bathrooms</p>
+            <p class="plocation"> {{ property.location }} </p>
+            <button type="button" class="emailbutton">Email Realtor</button>
+        </div>
+    </div>
+
+
+{% endblock %}

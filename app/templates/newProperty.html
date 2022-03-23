@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+{% endblock %}
+
+{% block main  %}
+{% include 'flash_messages.html' %}
+
+<h1>Add New Property</h1>
+
+<form id="propertyForm" action="{{ url_for('newProperty') }}" method="POST" enctype="multipart/form-data">
+
+    <!-- {# Add the file upload field as you learnt for Flask-WTF #} -->
+    {{ form.csrf_token }}
+
+    <div id="fInput">
+        {{ form.title.label }}
+        {{ form.title(class="fInput") }}       
+    </div>
+
+    <div id="fInput">
+        {{ form.description.label }}
+        {{ form.description(class="fInput", maxlength=255) }}    
+    </div>
+
+    <div id="fInput">
+        {{ form.bedrooms.label }}
+        {{ form.bedrooms(class="fInput") }}  
+    </div>
+
+    <div id="fInput">
+        {{ form.bathrooms.label }}
+        {{ form.bathrooms(class="fInput") }}  
+    </div>
+
+    <div id="fInput">
+        {{ form.price.label }}
+        {{ form.price(class="fInput") }}  
+    </div>
+
+    <div id="fInput">
+        {{ form.type.label  }}
+        {{ form.type(class="fInput") }}   
+    </div>
+    
+
+    <div id="fInput">
+        {{ form.location.label }}
+        {{ form.location(class="fInput") }}  
+    </div>
+
+    <div id="photo_submit">
+        {{ form.photo.label }}
+        {{ form.photo(class="fInput") }}   
+    </div>
+
+    <button type="submit" name="submit" class="btn btn-primary">Add Property</button>
+
+    
+  </form>
+
+{% endblock %}
